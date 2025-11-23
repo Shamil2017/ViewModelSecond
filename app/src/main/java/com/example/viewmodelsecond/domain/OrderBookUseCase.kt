@@ -1,4 +1,7 @@
 package com.example.viewmodelsecond.domain
 
-class OrderBookUseCase {
+class OrderBookUseCase(private val repository: iBookRepository) {
+    fun execute(book: Book) {
+        repository.orderBook(book)
+    }
 }
