@@ -1,11 +1,13 @@
 package com.example.viewmodelsecond.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.viewmodelsecond.R
 import com.example.viewmodelsecond.data.InMemoryBookRepository
 import com.example.viewmodelsecond.domain.FindBookUseCase
@@ -18,12 +20,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var orderBookUseCase: OrderBookUseCase
     private lateinit var showBookUseCase: ShowBookUseCase
 
+    private lateinit var vm: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        Log.d("AAA","Activity created")
+
+        vm = ViewModelProvider(this).get(MainViewModel::class.java)
         // Создаём репозиторий с тестовыми книгами
         val repository = InMemoryBookRepository()
 
