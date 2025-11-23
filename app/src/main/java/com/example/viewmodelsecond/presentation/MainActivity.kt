@@ -16,10 +16,6 @@ import com.example.viewmodelsecond.domain.ShowBookUseCase
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var findBookUseCase: FindBookUseCase
-    private lateinit var orderBookUseCase: OrderBookUseCase
-    private lateinit var showBookUseCase: ShowBookUseCase
-
     private lateinit var vm: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,13 +26,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("AAA","Activity created")
 
         vm = ViewModelProvider(this).get(MainViewModel::class.java)
-        // Создаём репозиторий с тестовыми книгами
-        val repository = InMemoryBookRepository()
 
-        // ИНИЦИАЛИЗАЦИЯ USE CASE-ОВ
-        findBookUseCase = FindBookUseCase(repository)
-        orderBookUseCase = OrderBookUseCase(repository)
-        showBookUseCase = ShowBookUseCase(repository)
 
         // UI элементы
         val etTitle = findViewById<EditText>(R.id.etBookTitle)
@@ -48,50 +38,37 @@ class MainActivity : AppCompatActivity() {
         val btnOrder = findViewById<Button>(R.id.btnOrder)
 
         val tvResult = findViewById<TextView>(R.id.tvResult)
+        vm.resultLiveData.observe(this) { text ->
+            tvResult.text = text
+        }
 
+        // кнопка Показать книгу
         btnShow.setOnClickListener {
             val id = etId.text.toString().toIntOrNull()
-            if (id == null || title.isBlank() ) {
-                tvResult.text = "Введите id книги"
-                return@setOnClickListener
-            }
-            val book = showBookUseCase.execute(id)
-            if (book == null) {
-                tvResult.text = "Книга не найдена"
+            if (id == null) {
+                tvResult.text = "Введите ID книги"
             } else {
-                tvResult.text = "Найдена книга:\nID: ${book.id}\n${book.title} — ${book.author}"
+                vm.showBook(id)
             }
-
         }
+
+        // кнопка Найти книгу
         btnFind.setOnClickListener {
             val title = etTitle.text.toString()
-
             if (title.isBlank()) {
                 tvResult.text = "Введите название книги"
-                return@setOnClickListener
-            }
-
-            val book = findBookUseCase.execute(title)
-
-            if (book == null) {
-                tvResult.text = "Книга не найдена"
             } else {
-                tvResult.text = "Найдена книга:\nID: ${book.id}\n${book.title} — ${book.author}"
+                vm.findBook(title)
             }
         }
+
+        // кнопка Заказать книгу
         btnOrder.setOnClickListener {
             val id = etId.text.toString().toIntOrNull()
-            if (id == null || title.isBlank() ) {
-                tvResult.text = "Введите id книги"
-                return@setOnClickListener
-            }
-            val book = showBookUseCase.execute(id)
-            if (book == null) {
-                tvResult.text = "Книга не найдена"
+            if (id == null) {
+                tvResult.text = "Введите ID книги"
             } else {
-                orderBookUseCase.execute(book)
-                tvResult.text = "Заказана книга:\nID: ${book.id}\n${book.title} — ${book.author}"
-
+                vm.orderBook(id)
             }
         }
     }
